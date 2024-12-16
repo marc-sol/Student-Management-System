@@ -1,6 +1,6 @@
 <?php
 
-include_once("connections/connection.php");
+include_once("connection.php");
 $con = connection();
 $id = $_GET['ID'];
 
@@ -14,9 +14,10 @@ if(isset($_POST['submit'])){
 
     $fname = $_POST['firstname'];
     $lname = $_POST['lastname'];
+    $birthdate = $_POST['birthdate'];
     $gender = $_POST['gender'];
 
-        $sql = "UPDATE student_list SET first_name = '$fname', last_name = '$lname', gender = '$gender' WHERE id = '$id' ";
+        $sql = "UPDATE student_list SET first_name = '$fname', last_name = '$lname', birthdate = '$birthdate',gender = '$gender' WHERE id = '$id' ";
 
     $con->query($sql) or die ($con->error);
 
@@ -32,7 +33,7 @@ if(isset($_POST['submit'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management Sytem</title>
-    <link rel = "stylesheet" href="CSS/style.css">
+    <link rel = "stylesheet" href="style.css">
 
 
 </head>
@@ -45,6 +46,9 @@ if(isset($_POST['submit'])){
 
         <label>Last Name</label>
         <input type ="text" name ="lastname" id = "lastname" value="<?php echo $row['last_name'];?>">
+
+        <label>Birthdate</label>
+        <input type ="text" name = "birthdate" id = "birthdate">
 
         <label>Gender</label>
         <select name = "gender" id="gender">

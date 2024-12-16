@@ -1,45 +1,43 @@
 <?php
 session_start();
-include('db.php');
+include('db_connection.php');
 
-if ($_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: admin_login.php");
     exit();
 }
 
-$student_id = $_GET['id'];
+if (isset($_GET['id'])) {
+    $student_id = $_GET['id'];
 
-$stmt = $pdo->prepare("SELECT * FROM students WHERE student_id = :student_id");
-$stmt->execute(['student_id' => $student_id]);
-$student = $stmt->fetch();
+    $query = "SELECT * FROM students WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $student = $result->fetch_assoc();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $address = $_POST['address'];
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $birthdate = $_POST['birthdate'];
+        $gender = $_POST['gender'];
 
-    $stmt = $pdo->prepare("UPDATE students SET first_name = :first_name, last_name = :last_name, email = :email, phone = :phone, address = :address WHERE student_id = :student_id");
-    $stmt->execute([
-        'first_name' => $first_name,
-        'last_name' => $last_name,
-        'email' => $email,
-        'phone' => $phone,
-        'address' => $address,
-        'student_id' => $student_id
-    ]);
+        $query = "UPDATE students SET first_name = ?, last_name = ?, birthdate = ?, gender = ?, WHERE id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('sssssi', $first_name, $last_name, $email, $phone, $address, $student_id);
+        $stmt->execute();
 
-    header('Location: admin_dashboard.php');
-    exit();
+        header("Location: admin_dashboard.php");
+    }
 }
 ?>
 
 <form method="POST">
-    <input type="text" name="first_name" value="<?= $student['first_name'] ?>" required>
-    <input type="text" name="last_name" value="<?= $student['last_name'] ?>" required>
-    <input type="email" name="email" value="<?= $student['email'] ?>" required>
-    <input type="text" name="phone" value="<?= $student['phone'] ?>" required>
-    <textarea name="address" required><?= $student['address'] ?></textarea>
-    <button type="submit">Update Student</button>
+    First Name: <input type="text" name="first_name" value="<?= $student['first_name'] ?>" required><br>
+    Last Name: <input type="text" name="last_name" value="<?= $student['last_name'] ?>" required><br>
+    Email: <input type="email" name="email" value="<?= $student['email'] ?>"><br>
+    Phone: <input type="text" name="phone" value="<?= $student['phone'] ?>"><br>
+    Address: <textarea name="address"><?= $student['address'] ?></textarea><br>
+    <input type="submit" value="Update Student">
 </form>

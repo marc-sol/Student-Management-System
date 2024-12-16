@@ -1,30 +1,43 @@
 <?php
-if (!isset($_SESSION)){
-    session_start();
-}
+session_start();
 
+include('connection.php'); 
 
-include_once("connection.php");
-$con = connection();
-
-if(isset($_POST['login'])){
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM student_users WHERE username = '$username' AND password = '$password'";
-    $user = $con->query($sql) or die ($con->error);
-    $row = $user->fetch_assoc();
-    $total = $user->num_rows;
+    if ($conn) {
+        $query = "SELECT * FROM users WHERE username = ?";
+        
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param("s", $username); 
+            $stmt->execute();
 
-    if($total > 0){
-        $_SESSION['UserLogin'] = $row ['username'];
-        $_SESSION['Access'] = $row['access'];
-        echo header ("Location: index.php");
-    }else{
-        echo "No User Found";
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['role'] = $user['role'];  // Admin or Student
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    echo "Invalid credentials.";
+                }
+            } else {
+                echo "User not found.";
+            }
+
+            $stmt->close();
+        } else {
+            echo "Failed to prepare statement.";
+        }
+    } else {
+        echo "Database connection failed.";
     }
 }
-
 
 ?>
 
@@ -33,23 +46,17 @@ if(isset($_POST['login'])){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management Sytem</title>
-    <link rel = "stylesheet" href="style.css">
-
-
+    <title>Login</title>
 </head>
 <body>
-  <div class="login-container">
-   <h2>Login Page</h2>
-   <br/>
-   <form action="" method="post">
-   <label>Username</label>
-   <input type="text" name="username" id = "username">
-   <label>Password</label>
-   <input type="password" name="password" id="password">
-   <button type = "submit" name = "login">Login</button>
-   </form>
-  </div>
-   
+    <form action="login.php" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
 </body>
 </html>

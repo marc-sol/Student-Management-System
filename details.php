@@ -5,13 +5,13 @@ if(!isset($_SESSION)){
 }
 
 if(isset($_SESSION['Access']) && $_SESSION['Access'] == "administrator"){
-    echo "Welcome ".$_SESSION['UserLogin']."<br/><br/>";
+    echo "Welcome ".$_SESSION['UserLogin']."";
 } else{
     echo header("Location: index.php");
 }
 
 
-include_once("connections/connection.php");
+include_once("connection.php");
 
  $con = connection();
 
@@ -29,7 +29,7 @@ include_once("connections/connection.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management Sytem</title>
-    <link rel = "stylesheet" href="CSS/style.css">
+    <link rel = "stylesheet" href="style.css">
 
 
 </head>

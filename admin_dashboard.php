@@ -1,53 +1,71 @@
 <?php
 session_start();
-include('db.php');
+include('connection.php');
 
-if ($_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+if ($_SESSION['role'] != 'admin') {
+    header("Location: login.php");
     exit();
 }
 
-$stmt = $pdo->query("SELECT * FROM students");
-$students = $stmt->fetchAll();
+$query_students = "SELECT * FROM students";
+$students_result = $conn->query($query_students);
+
+$query_subjects = "SELECT * FROM subjects";
+$subjects_result = $conn->query($query_subjects);
+
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="admin_dashboard.css">
-</head>
-<body>
-
 <h1>Admin Dashboard</h1>
+<a href="logout.php">Logout</a>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($students as $student): ?>
-            <tr>
-                <td><?= $student['first_name'] ?> <?= $student['last_name'] ?></td>
-                <td><?= $student['email'] ?></td>
-                <td><?= $student['phone'] ?></td>
-                <td>
-                    <a href="edit_student.php?id=<?= $student['student_id'] ?>">Edit</a> | 
-                    <a href="delete_student.php?id=<?= $student['student_id'] ?>">Delete</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
+<h2>Manage Students</h2>
+<a href="add.php">Add New Student</a>
 
-</body>
-</html>
+<h2>Manage Grades</h2>
+<form method="POST" action="assign_grade.php">
+    Student:
+    <select name="student_id">
+        <?php while ($student = $students_result->fetch_assoc()): ?>
+        <option value="<?= $student['id'] ?>"><?= $student['first_name'] . ' ' . $student['last_name'] ?></option>
+        <?php endwhile; ?>
+    </select><br>
+
+    Subject:
+    <select name="subject_id">
+        <?php while ($subject = $subjects_result->fetch_assoc()): ?>
+        <option value="<?= $subject['id'] ?>"><?= $subject['name'] ?></option>
+        <?php endwhile; ?>
+    </select><br>
+
+    Grade: <input type="text" name="grade" required><br>
+    <input type="submit" value="Assign Grade">
+</form>
+
+<h2>Attendance</h2>
+<form method="POST" action="mark_attendance.php">
+    Student:
+    <select name="student_id">
+        <?php while ($student = $students_result->fetch_assoc()): ?>
+        <option value="<?= $student['id'] ?>"><?= $student['first_name'] . ' ' . $student['last_name'] ?></option>
+        <?php endwhile; ?>
+    </select><br>
+
+    Subject:
+    <select name="subject_id">
+        <?php while ($subject = $subjects_result->fetch_assoc()): ?>
+        <option value="<?= $subject['id'] ?>"><?= $subject['name'] ?></option>
+        <?php endwhile; ?>
+    </select><br>
+
+    Date: <input type="date" name="date" required><br>
+    Status: 
+    <select name="status">
+        <option value="present">Present</option>
+        <option value="absent">Absent</option>
+        <option value="late">Late</option>
+    </select><br>
+    <input type="submit" value="Mark Attendance">
+</form>
+
+<h2>Generate Reports</h2>
+<a href="generate_reports.php">Generate Attendance Report</a>
