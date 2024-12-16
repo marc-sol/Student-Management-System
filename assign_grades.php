@@ -30,13 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result_check->num_rows > 0) {
             $query_update_grade = "UPDATE grades SET grade = ? WHERE student_id = ? AND subject_id = ?";
             $stmt_update = $conn->prepare($query_update_grade);
-            $stmt_update->bind_param('dii', $grade, $student_id, $subject_id);  // 'd' for double (numeric)
+            $stmt_update->bind_param('dii', $grade, $student_id, $subject_id);  
             $stmt_update->execute();
             echo "Grade updated successfully!";
         } else {
             $query_insert_grade = "INSERT INTO grades (student_id, subject_id, grade) VALUES (?, ?, ?)";
             $stmt_insert = $conn->prepare($query_insert_grade);
-            $stmt_insert->bind_param('iid', $student_id, $subject_id, $grade);  // 'i' for integer, 'd' for double
+            $stmt_insert->bind_param('iid', $student_id, $subject_id, $grade);  
             $stmt_insert->execute();
             echo "Grade assigned successfully!";
         }
