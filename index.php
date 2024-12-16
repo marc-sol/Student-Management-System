@@ -10,7 +10,7 @@ if(isset($_SESSION['UserLogin'])){
     echo "Welcome Guest";
 }
 
-include_once("connections/connection.php");
+include_once("connection.php");
 
 $con = connection();
 
@@ -26,7 +26,7 @@ $row = $students->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management Sytem</title>
-    <link rel = "stylesheet" href="CSS/style.css">
+    <link rel = "stylesheet" href="style.css">
 
 
 </head>

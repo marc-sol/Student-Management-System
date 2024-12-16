@@ -1,18 +1,25 @@
 <?php 
 
-    function connection(){
-        $host = "localhost";
-        $username = "root";
-        $password = "12345";
-        $database = "student_system";
-        
-        
-        $con = new mysqli($host, $username, $password, $database);
-        
-        if($con->connect_error){
-                echo $con->connect_error;
-        }else{
+function connection(){
+    $host = "localhost";           
+    $username = "root";            
+    $password = "";                
+    $dbname = "student_management"; 
+    $port = 3307;                  
 
-            return $con;
-        }
+    $con = new mysqli($host, $username, $password, $dbname, $port);
+
+    if ($con->connect_error) {
+        die("Connection failed: " . $con->connect_error); 
     }
+
+    echo "Connected successfully to the database: $dbname!";
+
+    return $con; 
+}
+
+$con = connection(); 
+
+$con->close();
+
+?>
