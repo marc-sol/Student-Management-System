@@ -8,7 +8,6 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Add subject
     $subject_name = $_POST['subject_name'];
 
     $query = "INSERT INTO subjects (name) VALUES (?)";
@@ -19,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: admin_manage_subjects.php");
 }
 
-// View subjects
 $query = "SELECT * FROM subjects";
 $result = $conn->query($query);
 ?>
